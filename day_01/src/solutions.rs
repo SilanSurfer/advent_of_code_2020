@@ -1,9 +1,8 @@
-use std::str::FromStr;
-
+use utils;
 const EXPECTED_SUM: i64 = 2020;
 
 pub fn calculate_first_task(input: &String) -> Option<i64> {
-    let numbers = get_numbers_from_input(input);
+    let numbers = utils::get_numbers_from_input(input);
     let len = numbers.len();
 
     for x in 0..len - 1 {
@@ -18,7 +17,7 @@ pub fn calculate_first_task(input: &String) -> Option<i64> {
 }
 
 pub fn calculate_second_task(input: &String) -> Option<i64> {
-    let numbers = get_numbers_from_input(input);
+    let numbers = utils::get_numbers_from_input(input);
     let len = numbers.len();
 
     for x in 0..len - 2 {
@@ -32,13 +31,4 @@ pub fn calculate_second_task(input: &String) -> Option<i64> {
         }
     }
     None
-}
-
-
-fn get_numbers_from_input(input: &String) -> Vec<i64> {
-    let mut numbers: Vec<i64> = Vec::new();
-    for line in input.lines() {
-        numbers.push(i64::from_str(line).unwrap());
-    }
-    numbers
 }
