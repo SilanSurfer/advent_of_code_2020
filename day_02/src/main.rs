@@ -4,10 +4,10 @@ use std::str::FromStr;
 
 const REGEX_EXTRACT_DATA: &str = r"(\d+)-(\d+) (\w): (\w+)";
 
-fn get_valid_passwords_count_policy(contents: &String) -> u32 {
+fn get_valid_passwords_count_policy(contents: &Vec<&str>) -> u32 {
     let re = Regex::new(REGEX_EXTRACT_DATA).unwrap();
     let mut valid: u32 = 0;
-    for line in contents.lines() {
+    for line in contents {
         let caps = re.captures(line).unwrap();
         let min: usize = caps
             .get(1)
@@ -27,10 +27,10 @@ fn get_valid_passwords_count_policy(contents: &String) -> u32 {
     valid
 }
 
-fn get_valid_password_positions_policy(contents: &String) -> u32 {
+fn get_valid_password_positions_policy(contents: &Vec<&str>) -> u32 {
     let re = Regex::new(REGEX_EXTRACT_DATA).unwrap();
     let mut valid: u32 = 0;
-    for line in contents.lines() {
+    for line in contents {
         let caps = re.captures(line).unwrap();
         let first_pos: usize = caps
             .get(1)
@@ -57,12 +57,13 @@ fn main() {
     let file_path = "inputs/day_02.txt";
     let contents =
         fs::read_to_string(file_path).expect(format!("Couldn't open file {}", file_path).as_str());
+    let input_vec = utils::get_lines_from_input(&contents);
     println!(
         "Valid passwords with count policy: {}",
-        get_valid_passwords_count_policy(&contents)
+        get_valid_passwords_count_policy(&input_vec)
     );
     println!(
         "Valid passwords with position policy: {}",
-        get_valid_password_positions_policy(&contents)
+        get_valid_password_positions_policy(&input_vec)
     );
 }
