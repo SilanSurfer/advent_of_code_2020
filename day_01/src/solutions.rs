@@ -1,7 +1,6 @@
-use utils;
 const EXPECTED_SUM: i64 = 2020;
 
-pub fn calculate_first_task(input: &String) -> Option<i64> {
+pub fn calculate_first_task(input: &str) -> Option<i64> {
     let numbers = utils::get_numbers_from_input(input);
     let len = numbers.len();
 
@@ -16,7 +15,7 @@ pub fn calculate_first_task(input: &String) -> Option<i64> {
     None
 }
 
-pub fn calculate_second_task(input: &String) -> Option<i64> {
+pub fn calculate_second_task(input: &str) -> Option<i64> {
     let numbers = utils::get_numbers_from_input(input);
     let len = numbers.len();
 

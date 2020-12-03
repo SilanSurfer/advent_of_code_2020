@@ -3,7 +3,7 @@ use std::str::FromStr;
 
 const REGEX_EXTRACT_DATA: &str = r"(\d+)-(\d+) (\w): (\w+)";
 
-pub fn get_valid_passwords_count_policy(contents: &Vec<&str>) -> u32 {
+pub fn get_valid_passwords_count_policy(contents: &[&str]) -> u32 {
     let re = Regex::new(REGEX_EXTRACT_DATA).unwrap();
     let mut valid: u32 = 0;
     for line in contents {
@@ -29,7 +29,7 @@ pub fn get_valid_passwords_count_policy(contents: &Vec<&str>) -> u32 {
     valid
 }
 
-pub fn get_valid_password_positions_policy(contents: &Vec<&str>) -> u32 {
+pub fn get_valid_password_positions_policy(contents: &[&str]) -> u32 {
     let re = Regex::new(REGEX_EXTRACT_DATA).unwrap();
     let mut valid: u32 = 0;
     for line in contents {
@@ -63,10 +63,10 @@ pub fn get_valid_password_positions_policy(contents: &Vec<&str>) -> u32 {
             .chars()
             .nth(second_pos)
             .expect("Couldn't find char at second position!");
-        if first_char == character && second_char != character {
-            valid += 1;
-        } else if first_char != character && second_char == character {
-            valid += 1;
+        match (first_char == character, second_char == character) {
+            (true, false) => valid += 1,
+            (false, true) => valid += 1,
+            _ => {},
         }
     }
     valid
