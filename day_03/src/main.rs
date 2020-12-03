@@ -7,5 +7,12 @@ fn main() {
     let contents =
         fs::read_to_string(file_path).expect(format!("Couldn't open file {}", file_path).as_str());
     let input_vec = utils::get_lines_from_input(&contents);
-    println!("No of trees in path: {}", solutions::trees_in_path(&input_vec));
+    println!(
+        "No of trees in path: {}",
+        solutions::trees_in_path_with_default_step(&input_vec)
+    );
+    println!(
+        "Multiplication of no of trees in many paths: {}",
+        solutions::multiplication_of_tress_in_path_with_different_steps(&input_vec)
+    );
 }
