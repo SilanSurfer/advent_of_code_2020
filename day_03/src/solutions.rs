@@ -7,25 +7,29 @@ pub fn trees_in_path_with_default_step(input: &Vec<&str>) -> u32 {
 }
 
 pub fn multiplication_of_tress_in_path_with_different_steps(input: &Vec<&str>) -> u64 {
-    STEPS.iter().fold(1, |acc: u64, item| acc * trees_in_path(input, item))
+    STEPS
+        .iter()
+        .fold(1, |acc: u64, item| acc * trees_in_path(input, item))
 }
 
 fn trees_in_path(input: &Vec<&str>, step: &(usize, usize)) -> u64 {
     let mut x_pos: usize = STARTING_POINT.1;
-    let mut counter = 0;
     let len = input[0].len();
-    for (no, line) in input.iter().enumerate() {
-        if no % step.1 != 0 {
-            continue;
-        }
-        let obj = line
-            .chars()
-            .nth(x_pos)
-            .expect("Out of range in x position!");
-        x_pos = (x_pos + step.0) % len;
-        if obj == '#' {
-            counter += 1;
-        }
-    }
-    counter
+
+    input
+        .iter()
+        .enumerate()
+        .filter(|(no, _)| no % step.1 == 0)
+        .fold(0, |acc, (_, line)| {
+            let obj = line
+                .chars()
+                .nth(x_pos)
+                .expect("Out of range in x position!");
+            x_pos = (x_pos + step.0) % len;
+            if obj == '#' {
+                acc + 1
+            } else {
+                acc
+            }
+        })
 }
