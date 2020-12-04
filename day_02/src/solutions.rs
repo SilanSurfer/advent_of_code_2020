@@ -66,7 +66,7 @@ pub fn get_valid_password_positions_policy(contents: &[&str]) -> u32 {
         match (first_char == character, second_char == character) {
             (true, false) => valid += 1,
             (false, true) => valid += 1,
-            _ => {},
+            _ => {}
         }
     }
     valid
