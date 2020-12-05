@@ -63,7 +63,7 @@ pub fn count_valid_passports_with_param_validation(input: &Vec<&str>) -> u32 {
         }
         if (params_map.len() == 8
             || (params_map.len() == 7 && !params_map.contains_key(&PassportKeys::Cid)))
-                && validate_parameters(&params_map)
+            && validate_parameters(&params_map)
         {
             valid_count += 1;
         }
@@ -97,8 +97,8 @@ fn validate_parameters(param_map: &HashMap<PassportKeys, &str>) -> bool {
                     if value.len() <= 2 {
                         return false;
                     }
-                    let val = &value[..value.len()-2];
-                    let unit = &value[value.len()-2..value.len()];
+                    let val = &value[..value.len() - 2];
+                    let unit = &value[value.len() - 2..value.len()];
                     let num = val.parse::<u32>().expect("Couldn't convert to u32");
                     if unit == "cm" {
                         num >= 150 && num <= 193
@@ -113,10 +113,9 @@ fn validate_parameters(param_map: &HashMap<PassportKeys, &str>) -> bool {
                         .chars()
                         .enumerate()
                         .filter(|(no, letter)| {
-                            if *no == 0  && *letter != '#' {
+                            if *no == 0 && *letter != '#' {
                                 false
-                            }
-                            else if *no == 0 && *letter == '#' {
+                            } else if *no == 0 && *letter == '#' {
                                 true
                             } else if *no >= 1 && *no <= 6 {
                                 letter.is_digit(10) || VALID_LETTER.contains(letter)
@@ -129,11 +128,7 @@ fn validate_parameters(param_map: &HashMap<PassportKeys, &str>) -> bool {
                 }
                 PassportKeys::Ecl => VALID_EYE_COLOR.contains(value),
                 PassportKeys::Pid => {
-                    value
-                        .chars()
-                        .filter(|letter| letter.is_digit(10))
-                        .count()
-                        == 9
+                    value.chars().filter(|letter| letter.is_digit(10)).count() == 9
                 }
                 PassportKeys::Cid => true,
             };
