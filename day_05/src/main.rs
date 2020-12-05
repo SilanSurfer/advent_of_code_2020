@@ -11,5 +11,8 @@ fn main() {
         "Highest seat ID: {:?}",
         solutions::get_highest_seat_id(&input_vec)
     );
-    println!("Ordered seat IDs: {:?}", solutions::get_ordered_seat_ids(&input_vec))
+    println!(
+        "Ordered seat IDs: {:?}",
+        solutions::get_your_seat_id(&input_vec)
+    )
 }

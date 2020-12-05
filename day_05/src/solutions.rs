@@ -1,6 +1,6 @@
-use std::str::FromStr;
 use std::cmp::Ordering;
 use std::fmt;
+use std::str::FromStr;
 
 #[derive(Debug)]
 struct BoardingPassError(String);
@@ -36,7 +36,6 @@ impl PartialEq for BoardingPass {
     }
 }
 
-
 impl FromStr for BoardingPass {
     type Err = BoardingPassError;
 
@@ -58,14 +57,20 @@ impl FromStr for BoardingPass {
                     row_no = right.to_vec();
                 }
                 _ => {
-                    return Err(BoardingPassError(String::from("Found unexpected letter when searching for row")));
+                    return Err(BoardingPassError(String::from(
+                        "Found unexpected letter when searching for row",
+                    )));
                 }
             }
         }
         if row_no.len() == 1 {
-            row_val = row_no.pop().ok_or(BoardingPassError(String::from("Couldn't extract row value")))?;
+            row_val = row_no.pop().ok_or(BoardingPassError(String::from(
+                "Couldn't extract row value",
+            )))?;
         } else {
-            return Err(BoardingPassError(String::from("Row vector should have size 1")));
+            return Err(BoardingPassError(String::from(
+                "Row vector should have size 1",
+            )));
         }
 
         split_point = col_no.len();
@@ -81,14 +86,20 @@ impl FromStr for BoardingPass {
                     col_no = left.to_vec();
                 }
                 _ => {
-                    return Err(BoardingPassError(String::from("Found unexpected letter when searching for col")));
+                    return Err(BoardingPassError(String::from(
+                        "Found unexpected letter when searching for col",
+                    )));
                 }
             }
         }
         if col_no.len() == 1 {
-            col_val = col_no.pop().ok_or(BoardingPassError(String::from("Couldn't extract col value")))?;
+            col_val = col_no.pop().ok_or(BoardingPassError(String::from(
+                "Couldn't extract col value",
+            )))?;
         } else {
-            return Err(BoardingPassError(String::from("Col vector should have size 1")));
+            return Err(BoardingPassError(String::from(
+                "Col vector should have size 1",
+            )));
         }
         Ok(BoardingPass {
             row: row_val,
@@ -98,21 +109,32 @@ impl FromStr for BoardingPass {
     }
 }
 
-pub fn get_ordered_seat_ids(lines: &Vec<&str>) -> Vec<u64> {
-    let mut results: Vec<BoardingPass> = Vec::new();
-    for line in lines {
-        match BoardingPass::from_str(line) {
-            Ok(boarding_pass) => { 
-                results.push(boarding_pass);
-            }
-            Err(e) => println!("Error from_str {:?}", e), 
-        }
-    }
-    let mut ids: Vec<u64> = results.iter().map(|boarding_pass| boarding_pass.id).collect();
+pub fn get_sorted_seat_ids(lines: &Vec<&str>) -> Vec<u64> {
+    let mut ids: Vec<u64> = lines
+        .iter()
+        .map(|line| match BoardingPass::from_str(line) {
+            Ok(boarding_pass) => boarding_pass.id,
+            Err(e) => panic!(format!("Error {:?}", e)),
+        })
+        .collect();
     ids.sort();
     ids
 }
 
 pub fn get_highest_seat_id(lines: &Vec<&str>) -> u64 {
-    *get_ordered_seat_ids(lines).iter().max().expect("Something went wrong when searching for max")
+    *get_sorted_seat_ids(lines)
+        .iter()
+        .max()
+        .expect("Something went wrong when searching for max")
+}
+
+pub fn get_your_seat_id(lines: &Vec<&str>) -> u64 {
+    let seats = get_sorted_seat_ids(lines);
+    seats
+        .iter()
+        .zip(seats.iter().skip(1))
+        .find(|(prev, next)| **next - **prev == 2)
+        .expect("Couldn't find seat!")
+        .0
+        + 1
 }
