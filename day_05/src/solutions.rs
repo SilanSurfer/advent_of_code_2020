@@ -3,108 +3,72 @@ use std::fmt;
 use std::str::FromStr;
 
 #[derive(Debug)]
-struct BoardingPassError(String);
+struct BoardingSeatError(String);
 
-impl fmt::Display for BoardingPassError {
+impl fmt::Display for BoardingSeatError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
     }
 }
 
 #[derive(Debug, Eq)]
-struct BoardingPass {
+struct BoardingSeat {
     row: u32,
     col: u32,
     id: u64,
 }
 
-impl Ord for BoardingPass {
+impl Ord for BoardingSeat {
     fn cmp(&self, other: &Self) -> Ordering {
         self.id.cmp(&other.id)
     }
 }
 
-impl PartialOrd for BoardingPass {
+impl PartialOrd for BoardingSeat {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl PartialEq for BoardingPass {
+impl PartialEq for BoardingSeat {
     fn eq(&self, other: &Self) -> bool {
         self.id == other.id
     }
 }
 
-impl FromStr for BoardingPass {
-    type Err = BoardingPassError;
+impl FromStr for BoardingSeat {
+    type Err = BoardingSeatError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut row_val: u32;
-        let mut col_val: u32;
-        let row = &s[0..7];
         let mut row_no: Vec<u32> = (0..128).collect();
         let mut col_no: Vec<u32> = (0..8).collect();
         let mut split_point = row_no.len();
-        for letter in row.chars() {
+        for (_, letter) in s.chars().enumerate().take_while(|(no, _)| no < &7) {
             split_point /= 2;
             let (left, right) = row_no.split_at(split_point);
             match letter {
-                'F' => {
-                    row_no = left.to_vec();
-                }
-                'B' => {
-                    row_no = right.to_vec();
-                }
-                _ => {
-                    return Err(BoardingPassError(String::from(
-                        "Found unexpected letter when searching for row",
-                    )));
-                }
+                'F' => row_no = left.to_vec(),
+                'B' => row_no = right.to_vec(),
+                _ => {}
             }
-        }
-        if row_no.len() == 1 {
-            row_val = row_no.pop().ok_or(BoardingPassError(String::from(
-                "Couldn't extract row value",
-            )))?;
-        } else {
-            return Err(BoardingPassError(String::from(
-                "Row vector should have size 1",
-            )));
         }
 
         split_point = col_no.len();
-        let col = &s[7..];
-        for letter in col.chars() {
+        for (_, letter) in s.chars().enumerate().skip(7) {
             split_point /= 2;
             let (left, right) = col_no.split_at(split_point);
             match letter {
-                'R' => {
-                    col_no = right.to_vec();
-                }
-                'L' => {
-                    col_no = left.to_vec();
-                }
-                _ => {
-                    return Err(BoardingPassError(String::from(
-                        "Found unexpected letter when searching for col",
-                    )));
-                }
+                'R' => col_no = right.to_vec(),
+                'L' => col_no = left.to_vec(),
+                _ => {}
             }
         }
-        if col_no.len() == 1 {
-            col_val = col_no.pop().ok_or(BoardingPassError(String::from(
-                "Couldn't extract col value",
-            )))?;
-        } else {
-            return Err(BoardingPassError(String::from(
-                "Col vector should have size 1",
-            )));
-        }
-        Ok(BoardingPass {
-            row: row_val,
-            col: col_val,
-            id: row_val as u64 * 8 + col_val as u64,
+        let row = row_no.pop().unwrap();
+        let col = col_no.pop().unwrap();
+        Ok(BoardingSeat {
+            row,
+            col,
+            id: row as u64 * 8 + col as u64,
         })
     }
 }
@@ -112,7 +76,7 @@ impl FromStr for BoardingPass {
 pub fn get_sorted_seat_ids(lines: &Vec<&str>) -> Vec<u64> {
     let mut ids: Vec<u64> = lines
         .iter()
-        .map(|line| match BoardingPass::from_str(line) {
+        .map(|line| match BoardingSeat::from_str(line) {
             Ok(boarding_pass) => boarding_pass.id,
             Err(e) => panic!(format!("Error {:?}", e)),
         })
