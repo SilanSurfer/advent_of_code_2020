@@ -1,4 +1,3 @@
-use std::cmp::Ordering;
 use std::fmt;
 use std::str::FromStr;
 
@@ -11,30 +10,8 @@ impl fmt::Display for BoardingSeatError {
     }
 }
 
-#[derive(Debug, Eq)]
-struct BoardingSeat {
-    row: u32,
-    col: u32,
-    id: u64,
-}
-
-impl Ord for BoardingSeat {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.id.cmp(&other.id)
-    }
-}
-
-impl PartialOrd for BoardingSeat {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl PartialEq for BoardingSeat {
-    fn eq(&self, other: &Self) -> bool {
-        self.id == other.id
-    }
-}
+#[derive(Debug, PartialEq, PartialOrd, Eq, Ord)]
+struct BoardingSeat(u64);
 
 impl FromStr for BoardingSeat {
     type Err = BoardingSeatError;
@@ -65,19 +42,15 @@ impl FromStr for BoardingSeat {
         }
         let row = row_no.pop().unwrap();
         let col = col_no.pop().unwrap();
-        Ok(BoardingSeat {
-            row,
-            col,
-            id: row as u64 * 8 + col as u64,
-        })
+        Ok(BoardingSeat(row as u64 * 8 + col as u64))
     }
 }
 
-pub fn get_sorted_seat_ids(lines: &Vec<&str>) -> Vec<u64> {
-    let mut ids: Vec<u64> = lines
+fn get_sorted_seat_ids(lines: &Vec<&str>) -> Vec<BoardingSeat> {
+    let mut ids: Vec<BoardingSeat> = lines
         .iter()
         .map(|line| match BoardingSeat::from_str(line) {
-            Ok(boarding_pass) => boarding_pass.id,
+            Ok(boarding_pass) => boarding_pass,
             Err(e) => panic!(format!("Error {:?}", e)),
         })
         .collect();
@@ -86,10 +59,10 @@ pub fn get_sorted_seat_ids(lines: &Vec<&str>) -> Vec<u64> {
 }
 
 pub fn get_highest_seat_id(lines: &Vec<&str>) -> u64 {
-    *get_sorted_seat_ids(lines)
+    get_sorted_seat_ids(lines)
         .iter()
         .max()
-        .expect("Something went wrong when searching for max")
+        .expect("Couldn't get max value").0
 }
 
 pub fn get_your_seat_id(lines: &Vec<&str>) -> u64 {
@@ -97,8 +70,8 @@ pub fn get_your_seat_id(lines: &Vec<&str>) -> u64 {
     seats
         .iter()
         .zip(seats.iter().skip(1))
-        .find(|(prev, next)| **next - **prev == 2)
+        .find(|(prev, next)| (**next).0 - (**prev).0 == 2)
         .expect("Couldn't find seat!")
-        .0
+        .0.0
         + 1
 }
