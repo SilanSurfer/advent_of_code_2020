@@ -28,7 +28,7 @@ impl PassportKeys {
     }
 }
 
-pub fn count_valid_passports(input: &Vec<&str>) -> u32 {
+pub fn count_valid_passports(input: &[&str]) -> u32 {
     let mut valid_count = 0;
     for passport in input {
         let mut params_map = HashMap::new();
@@ -49,7 +49,7 @@ pub fn count_valid_passports(input: &Vec<&str>) -> u32 {
     valid_count
 }
 
-pub fn count_valid_passports_with_param_validation(input: &Vec<&str>) -> u32 {
+pub fn count_valid_passports_with_param_validation(input: &[&str]) -> u32 {
     let mut valid_count = 0;
     for passport in input {
         let mut params_map = HashMap::new();
