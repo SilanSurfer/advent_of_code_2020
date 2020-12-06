@@ -1,5 +1,5 @@
+use anyhow::{anyhow, Result};
 use std::str::FromStr;
-use anyhow::{Result, anyhow};
 
 #[derive(Debug, PartialEq, PartialOrd, Eq, Ord)]
 struct BoardingSeat(u64);
@@ -17,9 +17,12 @@ impl FromStr for BoardingSeat {
             match letter {
                 'F' => row_no = left.to_vec(),
                 'B' => row_no = right.to_vec(),
-                _ => return Err(
-                    anyhow!("from_str -> letter should be F or B, found {}",
-                    letter)),
+                _ => {
+                    return Err(anyhow!(
+                        "from_str -> letter should be F or B, found {}",
+                        letter
+                    ))
+                }
             }
         }
 
@@ -30,21 +33,20 @@ impl FromStr for BoardingSeat {
             match letter {
                 'R' => col_no = right.to_vec(),
                 'L' => col_no = left.to_vec(),
-                _ => return Err(
-                    anyhow!("from_str -> letter should be R or L, found {}",
-                    letter)),
+                _ => {
+                    return Err(anyhow!(
+                        "from_str -> letter should be R or L, found {}",
+                        letter
+                    ))
+                }
             }
         }
         let row = row_no
-                    .pop()
-                    .ok_or_else(|| {
-                        anyhow!("Pop failed! row_no vector is empty?")
-                    })?;
+            .pop()
+            .ok_or_else(|| anyhow!("Pop failed! row_no vector is empty?"))?;
         let col = col_no
-                    .pop()
-                    .ok_or_else(|| {
-                        anyhow!("Pop failed! col_no vector is empty?")
-                    })?;
+            .pop()
+            .ok_or_else(|| anyhow!("Pop failed! col_no vector is empty?"))?;
         Ok(BoardingSeat(row as u64 * 8 + col as u64))
     }
 }
@@ -65,16 +67,18 @@ pub fn get_highest_seat_id(lines: &[&str]) -> u64 {
     get_sorted_seat_ids(lines)
         .iter()
         .max()
-        .expect("Couldn't get max value").0
+        .expect("Couldn't get max value")
+        .0
 }
 
 pub fn get_your_seat_id(lines: &[&str]) -> u64 {
     let seats = get_sorted_seat_ids(lines);
-    seats
+    (seats
         .iter()
         .zip(seats.iter().skip(1))
         .find(|(prev, next)| (**next).0 - (**prev).0 == 2)
         .expect("Couldn't find seat!")
-        .0.0
+        .0)
+        .0
         + 1
 }
