@@ -11,20 +11,10 @@ pub fn value_wihtout_sum(input: &Vec<i64>, preamble: usize) -> i64 {
                     count += 1;
                 }
             }
-            
         }
         if count == 0 {
             return val;
         }
-        // if slice
-        //     .iter()
-        //     .zip(slice.iter().skip(1))
-        //     .filter(|(prev, next)| **next + **prev == val)
-        //     .count()
-        //     == 0
-        // {
-        //     return val;
-        // }
     }
     panic!("Something went wrong - couldn't find value")
 }
