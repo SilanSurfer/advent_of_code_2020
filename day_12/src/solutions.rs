@@ -1,5 +1,6 @@
 use std::convert::TryInto;
 
+use crate::point::Point;
 
 // Action N means to move north by the given value.
 // Action S means to move south by the given value.
@@ -31,8 +32,7 @@ enum Direction {
 #[derive(Debug)]
 struct Ferry {
     direction: Direction,
-    pos_x: i32,
-    pos_y: i32,
+    pos: Point,
 }
 
 #[derive(Debug)]
@@ -126,7 +126,7 @@ impl FerryWithWaypoint {
         println!("Old position {:?}", self.waypoint.pos);
         self.waypoint.pos = (
             rotated.0.ceil() as i32 + self.ferry.0,
-            rotated.1.ceil() as i32 + self.ferry.1
+            rotated.1.ceil() as i32 + self.ferry.1,
         );
         println!("New position {:?}", self.waypoint.pos);
     }
@@ -164,32 +164,32 @@ impl Ferry {
     fn new() -> Self {
         Ferry {
             direction: Direction::East,
-            pos_x: 0,
-            pos_y: 0,
+            pos: Point::new(),
         }
     }
 
     fn apply(&mut self, action: &Action) {
         match action {
             Action::North(val) => {
-                self.pos_y += val;
+                self.pos.move_y(*val);
                 println!("Action: {:#?} -> Ferry: {:#?}", action, self);
             }
             Action::South(val) => {
-                self.pos_y -= val;
+                self.pos.move_y(-*val);
                 println!("Action: {:#?} -> Ferry: {:#?}", action, self);
             }
             Action::East(val) => {
-                self.pos_x += val;
+                self.pos.move_x(*val);
                 println!("Action: {:#?} -> Ferry: {:#?}", action, self);
             }
             Action::West(val) => {
-                self.pos_x -= val;
+                self.pos.move_x(-*val);
                 println!("Action: {:#?} -> Ferry: {:#?}", action, self);
             }
             Action::Left(val) => {
                 let rot_steps = val / 90;
-                self.direction = Direction::from_u32((self.direction as u32 + rot_steps as u32) % 4);
+                self.direction =
+                    Direction::from_u32((self.direction as u32 + rot_steps as u32) % 4);
                 println!("Action: {:#?} -> Ferry: {:#?}", action, self);
             }
             Action::Right(val) => {
@@ -200,19 +200,19 @@ impl Ferry {
             }
             Action::Forward(val) => match self.direction {
                 Direction::East => {
-                    self.pos_x += val;
+                    self.pos.move_x(*val);
                     println!("Action: {:#?} -> Ferry: {:#?}", action, self);
                 }
                 Direction::West => {
-                    self.pos_x -= val;
+                    self.pos.move_x(-*val);
                     println!("Action: {:#?} -> Ferry: {:#?}", action, self);
                 }
                 Direction::North => {
-                    self.pos_y += val;
+                    self.pos.move_y(*val);
                     println!("Action: {:#?} -> Ferry: {:#?}", action, self);
                 }
                 Direction::South => {
-                    self.pos_y -= val;
+                    self.pos.move_y(-*val);
                     println!("Action: {:#?} -> Ferry: {:#?}", action, self);
                 }
             },
@@ -220,7 +220,7 @@ impl Ferry {
     }
 
     fn get_manhattan_distance(&self) -> u64 {
-        (self.pos_x.abs() + self.pos_y.abs())
+        (self.pos.get_x().abs() + self.pos.get_y().abs())
             .try_into()
             .expect("Couldn't conver i32 to u64!")
     }

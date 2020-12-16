@@ -1,5 +1,6 @@
 use std::fs;
 
+mod point;
 mod solutions;
 
 fn main() {
@@ -12,7 +13,7 @@ fn main() {
         solutions::get_manhattan_distance(&input_vec)
     );
     println!(
-        "Manhattan distance with waypoint is{}",
+        "Manhattan distance with waypoint is {}",
         solutions::get_manhattan_distance_with_waypoint(&input_vec)
     );
 }
