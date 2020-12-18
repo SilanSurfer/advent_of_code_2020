@@ -1,14 +1,4 @@
-use std::convert::TryInto;
-
 use crate::point::Point;
-
-// Action N means to move north by the given value.
-// Action S means to move south by the given value.
-// Action E means to move east by the given value.
-// Action W means to move west by the given value.
-// Action L means to turn left the given number of degrees.
-// Action R means to turn right the given number of degrees.
-// Action F means to move forward by the given value in the direction the
 
 #[derive(Debug)]
 enum Action {
@@ -36,14 +26,9 @@ struct Ferry {
 }
 
 #[derive(Debug)]
-struct Waypoint {
-    pos: (i32, i32),
-}
-
-#[derive(Debug)]
 struct FerryWithWaypoint {
-    ferry: (i32, i32),
-    waypoint: Waypoint,
+    ferry: Point,
+    waypoint: Point,
 }
 
 impl Action {
@@ -77,28 +62,40 @@ impl Direction {
 impl FerryWithWaypoint {
     fn new() -> Self {
         FerryWithWaypoint {
-            ferry: (0, 0),
-            waypoint: Waypoint::new(),
+            ferry: Point::new(),
+            waypoint: Point::new_at(10, 1),
         }
     }
 
     fn apply(&mut self, action: &Action) {
         match action {
-            Action::North(_) | Action::South(_) | Action::East(_) | Action::West(_) => {
-                self.waypoint.move_point(action);
+            Action::North(val) => {
+                self.waypoint.move_y(*val);
+                println!("Action: {:#?} -> Waypoint: {:#?}", action, self);
+            }
+            Action::South(val) => {
+                self.waypoint.move_y(-*val);
+                println!("Action: {:#?} -> Waypoint: {:#?}", action, self);
+            }
+            Action::East(val) => {
+                self.waypoint.move_x(*val);
+                println!("Action: {:#?} -> Waypoint: {:#?}", action, self);
+            }
+            Action::West(val) => {
+                self.waypoint.move_x(-*val);
+                println!("Action: {:#?} -> Waypoint: {:#?}", action, self);
             }
             Action::Left(rot) => {
                 println!("Rotate L by: {}", rot);
-                self.rotate_waypoint(*rot);
+                self.waypoint.rotate(*rot);
             }
             Action::Right(rot) => {
                 println!("Rotate R by: {}", rot);
-                self.rotate_waypoint(360 - *rot);
+                self.waypoint.rotate(360 - *rot);
             }
             Action::Forward(val) => {
-                self.ferry = (
-                    self.ferry.0 + self.waypoint.pos.0 * val,
-                    self.ferry.1 + self.waypoint.pos.1 * val,
+                self.ferry = Point::new_at(self.ferry.get_x() + self.waypoint.get_x() * val,
+                    self.ferry.get_y() + self.waypoint.get_y() * val,
                 );
                 println!("After F {} Ferry: {:?}", val, self.ferry);
             }
@@ -106,57 +103,7 @@ impl FerryWithWaypoint {
     }
 
     fn get_manhattan_distance(&self) -> u64 {
-        (self.ferry.0.abs() + self.ferry.1.abs())
-            .try_into()
-            .expect("Couldn't conver i32 to u64!")
-    }
-
-    fn rotate_waypoint(&mut self, angle: i32) {
-        let original: (f64, f64) = (
-            (self.waypoint.pos.0 - self.ferry.0) as f64,
-            (self.waypoint.pos.1 - self.ferry.1) as f64,
-        );
-        let angle_in_radians = (angle as f64).to_radians();
-        let rotated = (
-            original.0 * angle_in_radians.cos() - original.1 * angle_in_radians.sin(),
-            original.0 * angle_in_radians.sin() + original.1 * angle_in_radians.cos(),
-        );
-        println!("Rotated waypoint by {}", angle);
-        println!("Ferry {:?}", self.ferry);
-        println!("Old position {:?}", self.waypoint.pos);
-        self.waypoint.pos = (
-            rotated.0.ceil() as i32 + self.ferry.0,
-            rotated.1.ceil() as i32 + self.ferry.1,
-        );
-        println!("New position {:?}", self.waypoint.pos);
-    }
-}
-
-impl Waypoint {
-    fn new() -> Self {
-        Waypoint { pos: (10, 1) }
-    }
-
-    fn move_point(&mut self, action: &Action) {
-        match action {
-            Action::North(val) => {
-                self.pos.1 += val;
-                println!("Action: {:#?} -> Waypoint: {:#?}", action, self);
-            }
-            Action::South(val) => {
-                self.pos.1 -= val;
-                println!("Action: {:#?} -> Waypoint: {:#?}", action, self);
-            }
-            Action::East(val) => {
-                self.pos.0 += val;
-                println!("Action: {:#?} -> Waypoint: {:#?}", action, self);
-            }
-            Action::West(val) => {
-                self.pos.0 -= val;
-                println!("Action: {:#?} -> Waypoint: {:#?}", action, self);
-            }
-            _ => panic!("Waypoint doesn't support this operation"),
-        }
+        self.ferry.get_manhattan_distance()
     }
 }
 
@@ -220,9 +167,7 @@ impl Ferry {
     }
 
     fn get_manhattan_distance(&self) -> u64 {
-        (self.pos.get_x().abs() + self.pos.get_y().abs())
-            .try_into()
-            .expect("Couldn't conver i32 to u64!")
+        self.pos.get_manhattan_distance()
     }
 }
 
