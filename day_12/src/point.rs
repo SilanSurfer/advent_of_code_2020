@@ -14,7 +14,7 @@ impl Point {
     }
 
     pub fn new_at(x: i32, y: i32) -> Self {
-        Point {x, y}
+        Point { x, y }
     }
 
     pub fn move_x(&mut self, val: i32) {
@@ -45,7 +45,7 @@ impl Point {
 
     pub fn get_manhattan_distance(&self) -> u64 {
         (self.x.abs() + self.y.abs())
-        .try_into()
-        .expect("Couldn't conver i32 to u64!")
+            .try_into()
+            .expect("Couldn't conver i32 to u64!")
     }
 }

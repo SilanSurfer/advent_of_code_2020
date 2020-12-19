@@ -71,33 +71,27 @@ impl FerryWithWaypoint {
         match action {
             Action::North(val) => {
                 self.waypoint.move_y(*val);
-                println!("Action: {:#?} -> Waypoint: {:#?}", action, self);
             }
             Action::South(val) => {
                 self.waypoint.move_y(-*val);
-                println!("Action: {:#?} -> Waypoint: {:#?}", action, self);
             }
             Action::East(val) => {
                 self.waypoint.move_x(*val);
-                println!("Action: {:#?} -> Waypoint: {:#?}", action, self);
             }
             Action::West(val) => {
                 self.waypoint.move_x(-*val);
-                println!("Action: {:#?} -> Waypoint: {:#?}", action, self);
             }
             Action::Left(rot) => {
-                println!("Rotate L by: {}", rot);
                 self.waypoint.rotate(*rot);
             }
             Action::Right(rot) => {
-                println!("Rotate R by: {}", rot);
                 self.waypoint.rotate(360 - *rot);
             }
             Action::Forward(val) => {
-                self.ferry = Point::new_at(self.ferry.get_x() + self.waypoint.get_x() * val,
+                self.ferry = Point::new_at(
+                    self.ferry.get_x() + self.waypoint.get_x() * val,
                     self.ferry.get_y() + self.waypoint.get_y() * val,
                 );
-                println!("After F {} Ferry: {:?}", val, self.ferry);
             }
         }
     }
@@ -119,48 +113,38 @@ impl Ferry {
         match action {
             Action::North(val) => {
                 self.pos.move_y(*val);
-                println!("Action: {:#?} -> Ferry: {:#?}", action, self);
             }
             Action::South(val) => {
                 self.pos.move_y(-*val);
-                println!("Action: {:#?} -> Ferry: {:#?}", action, self);
             }
             Action::East(val) => {
                 self.pos.move_x(*val);
-                println!("Action: {:#?} -> Ferry: {:#?}", action, self);
             }
             Action::West(val) => {
                 self.pos.move_x(-*val);
-                println!("Action: {:#?} -> Ferry: {:#?}", action, self);
             }
             Action::Left(val) => {
                 let rot_steps = val / 90;
                 self.direction =
                     Direction::from_u32((self.direction as u32 + rot_steps as u32) % 4);
-                println!("Action: {:#?} -> Ferry: {:#?}", action, self);
             }
             Action::Right(val) => {
                 let rot_steps = val / 90;
                 self.direction =
                     Direction::from_u32((4 + self.direction as u32 - rot_steps as u32) % 4);
-                println!("Action: {:#?} -> Ferry: {:#?}", action, self);
             }
             Action::Forward(val) => match self.direction {
                 Direction::East => {
                     self.pos.move_x(*val);
-                    println!("Action: {:#?} -> Ferry: {:#?}", action, self);
                 }
                 Direction::West => {
                     self.pos.move_x(-*val);
-                    println!("Action: {:#?} -> Ferry: {:#?}", action, self);
                 }
                 Direction::North => {
                     self.pos.move_y(*val);
-                    println!("Action: {:#?} -> Ferry: {:#?}", action, self);
                 }
                 Direction::South => {
                     self.pos.move_y(-*val);
-                    println!("Action: {:#?} -> Ferry: {:#?}", action, self);
                 }
             },
         }
