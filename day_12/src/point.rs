@@ -35,10 +35,12 @@ impl Point {
 
     pub fn rotate(&mut self, angle: i32) {
         let norm_angle = (angle as usize / 90) % 4;
-        self.x =
-            self.x * Point::SIN_COS_VALS[norm_angle].1 - self.y * Point::SIN_COS_VALS[norm_angle].0;
-        self.y =
-            self.x * Point::SIN_COS_VALS[norm_angle].0 + self.y * Point::SIN_COS_VALS[norm_angle].1
+        let result = (
+            self.x * Point::SIN_COS_VALS[norm_angle].1 - self.y * Point::SIN_COS_VALS[norm_angle].0,
+            self.x * Point::SIN_COS_VALS[norm_angle].0 + self.y * Point::SIN_COS_VALS[norm_angle].1,
+        );
+        self.x = result.0;
+        self.y = result.1;
     }
 
     pub fn get_manhattan_distance(&self) -> u64 {
